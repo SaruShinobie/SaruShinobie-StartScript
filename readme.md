@@ -1,14 +1,14 @@
 ### Introduction and Details
-**This is a autostart script for SPT-AKI (Single Player Tarkov) with customizable variables for start time, drive types, and your install directory. Written by SaruShinobie.**
+**This is an autostart script for SPT-AKI (Single Player Tarkov) with customizable variables for start time, drive types, and your install directory.**
 
 
-**Initially I wrote this script purely out of laziness, because I got tired of navigating to my install folder and starting the server and launcher manually. At some point down the line, I decided to polish this and release it to the public, in case anyone else finds it useful. With this program you can start SPT with one click, and you can create a shortcut to the game to send to your desktop.**
+**Initially I wrote this script purely out of laziness, because I got tired of navigating to my install folder and starting the server and launcher manually. At some point down the line, I decided I would polish this and release it to the public, in case anyone else finds it useful. With this program you can start SPT with one click, and you can create a shortcut to the game to send to your desktop.**
 
 You can skip to the Quick Start section [here.](###-quick-start-guide)
 
 # Variables File
 **Startup times, directories, and other settings can all be changed manually in the variables file.**
-The variables file can be opened with pretty much any text editor, notepad will work just fine.
+The `variables.txt` file can be opened with pretty much any text editor, notepad will work just fine.
 The file will look something like this:
 
 ```
@@ -62,7 +62,7 @@ A few basic things to note;
 To begin, simply run 'start.bat' found in the mod folder alongside this file.
 If it's your first time starting the program (it probably is if you're reading this), then you will be put through the setup process. It shouldn't take more than a minute or two.
 
- * You will be prompted to enter the directory of your SPT install folder, and either the type of drive that install folder is stored on, or to enter your own startup times.
+ * You will be prompted to enter the directory of your SPT install folder, and to enter either the type of drive that install folder is stored on, or your own startup times.
     - eg. "C:/Program Files/SinglePlayerTarkov" 
     - note: 'SinglePlayerTarkov' will be replaced with the name of your install folder.
  * You will also be asked whether or not you would like to enable fast mode. Fast mode cuts down on excess delays during startup significantly, although the experience is much less smooth and the application may be less pleasing to use.
