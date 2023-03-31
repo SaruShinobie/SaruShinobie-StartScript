@@ -1,5 +1,7 @@
 ### Introduction and Details
 **This is a autostart script for SPT-AKI (Single Player Tarkov) with customizable variables for start time, drive types, and your install directory. Written by SaruShinobie.**
+
+
 Initially I wrote this script purely out of laziness, because I got tired of navigating to my install folder and starting the server and launcher manually. At some point down the line, I decided to polish this and release it to the public, in case anyone else finds it useful. With this program you can start SPT with one click, and you can create a shortcut to the game to send to your desktop. 
 
 You can skip the Quick Start section [here.](###-quick-start-guide)
