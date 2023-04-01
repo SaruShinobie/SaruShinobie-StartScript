@@ -193,7 +193,7 @@ rem along with this program. If not, see <https://www.gnu.org/licenses/>.
                 echo launcherStartTimeHDD*5>> variables.txt
                 echo ;>> variables.txt
                 @timeout /t 1 >nul 2>&1
-                goto :finaltweaks
+                goto :q4shortcut
                 )
             if %choice1%==ssd (
                 echo driveType*%choice1%>> variables.txt
@@ -204,7 +204,7 @@ rem along with this program. If not, see <https://www.gnu.org/licenses/>.
                 echo launcherStartTimeSSD*4>> variables.txt
                 echo ;>> variables.txt
                 @timeout /t 1 >nul 2>&1
-                goto :finaltweaks
+                goto :q4shortcut
                 )
             if %choice1%==skip (
                 echo driveType*%choice1%>> variables.txt
@@ -215,7 +215,7 @@ rem along with this program. If not, see <https://www.gnu.org/licenses/>.
                 echo launcherStartTimeHDD*5>> variables.txt
                 echo ;>> variables.txt
                 @timeout /t 1 >nul 2>&1
-                goto :finaltweaks
+                goto :q4shortcut
                 )
             if %choice1%==custom goto :q3customtimes
             echo:
@@ -286,6 +286,46 @@ rem along with this program. If not, see <https://www.gnu.org/licenses/>.
     @timeout /t 1 >nul 2>&1
     echo Using custom times.
 
+:q4shortcut
+    echo:
+    echo ==============================
+    echo:
+    echo **WOULD YOU LIKE TO CREATE A SHORTCUT TO SPT ON YOUR DESKTOP?**
+    echo:
+    echo This program can send a shortcut to itself to your desktop,
+    echo so you can start Tarkov as easily as possible.
+    echo This will not show up on any other user's desktops on your device.
+    echo:
+    :choice4
+        set choice4=
+        set /p choice4=Would you like to create a desktop shortcut to Single Player Tarkov? [Y/N] 
+        if %choice4%==y (
+            echo:
+            echo Creating shortcut...
+            echo dynamicDirectory = CreateObject^("Scripting.FileSystemObject"^).GetParentFolderName^(WScript.ScriptFullName^)> TMPshortcutscript.vbs
+            echo Set WshShell = CreateObject^("WScript.Shell"^)>> TMPshortcutscript.vbs
+            echo strDesktopPath = WshShell.SpecialFolders^("Desktop"^)>> TMPshortcutscript.vbs
+            echo Set objShortcutUrl = WshShell.CreateShortcut^(strDesktopPath ^& "\SinglePlayerTarkov.lnk"^)>> TMPshortcutscript.vbs
+            echo objShortcutUrl.TargetPath = dynamicDirectory ^& "\start.bat">> TMPshortcutscript.vbs
+            echo objShortcutUrl.Description = "Start SPT">> TMPshortcutscript.vbs
+            echo objShortcutUrl.IconLocation = dynamicDirectory ^& "\logo.ico">> TMPshortcutscript.vbs
+            echo objShortcutUrl.Save>> TMPshortcutscript.vbs
+            @timeout /t 1 >nul 2>&1
+            cscript /nologo TMPshortcutscript.vbs
+            @timeout /t 1 >nul 2>&1
+            del TMPshortcutscript.vbs
+            goto :finaltweaks
+        )
+        if %choice4%==n (
+            echo A shortcut will not be created.
+            goto :finaltweaks
+        )
+        echo Your answer was invalid. You can enter 'y' for yes or 'n' for no.
+        echo This is case sensitive, type in lowercase.
+        pause
+        cls
+        goto :q4shortcut
+
 :finaltweaks
     echo:
     echo Making final tweaks...
@@ -310,13 +350,25 @@ rem along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 :replaceequalsigns
     rem replace * with = in variables file
-    cscript /nologo equalsignreplace.vbs  > variablestmp
-            @timeout /t 1 >nul 2>&1
-            del variables.txt
-            @timeout /t 1 >nul 2>&1
-            ren variablestmp variables.txt
-            echo All variables saved.
-            echo:
+    echo Set objFS = CreateObject^("Scripting.FileSystemObject"^)>> TMPequalsignreplace.vbs
+    echo strFile = "variables.txt">> TMPequalsignreplace.vbs
+    echo Set objFile = objFS.OpenTextFile^(strFile^)>> TMPequalsignreplace.vbs
+    echo Do Until objFile.AtEndOfStream>> TMPequalsignreplace.vbs
+    echo strLine = objFile.ReadLine>> TMPequalsignreplace.vbs
+    echo If InStr^(strLine,"*"^)^> 0 then>> TMPequalsignreplace.vbs
+    echo strLine = Replace^(strLine,"*","="^)>> TMPequalsignreplace.vbs
+    echo End If>> TMPequalsignreplace.vbs
+    echo WScript.Echo strLine>> TMPequalsignreplace.vbs
+    echo Loop>> TMPequalsignreplace.vbs
+
+        cscript /nologo TMPequalsignreplace.vbs  > variablestmp
+        @timeout /t 1 >nul 2>&1
+        del variables.txt
+        del TMPequalsignreplace.vbs
+        @timeout /t 1 >nul 2>&1
+        ren variablestmp variables.txt
+        echo All variables saved.
+        echo:
 
 :endsetup
     echo:
@@ -366,13 +418,27 @@ rem and 'startup.bat' files are joined.
     set noDelays==false
 
     rem make sure all variables are in correct format
-    cscript /nologo equalsignreplace.vbs  > variablestmp
+    echo Set objFS = CreateObject^("Scripting.FileSystemObject"^)>> TMPequalsignreplace.vbs
+    echo strFile = "variables.txt">> TMPequalsignreplace.vbs
+    echo Set objFile = objFS.OpenTextFile^(strFile^)>> TMPequalsignreplace.vbs
+    echo Do Until objFile.AtEndOfStream>> TMPequalsignreplace.vbs
+    echo strLine = objFile.ReadLine>> TMPequalsignreplace.vbs
+    echo If InStr^(strLine,"*"^)^> 0 then>> TMPequalsignreplace.vbs
+    echo strLine = Replace^(strLine,"*","="^)>> TMPequalsignreplace.vbs
+    echo End If>> TMPequalsignreplace.vbs
+    echo WScript.Echo strLine>> TMPequalsignreplace.vbs
+    echo Loop>> TMPequalsignreplace.vbs
+
+        cscript /nologo TMPequalsignreplace.vbs  > variablestmp
         @timeout /t 1 >nul 2>&1
         del variables.txt
-        @timeout /t 2 >nul 2>&1
+        del TMPequalsignreplace.vbs
+        @timeout /t 1 >nul 2>&1
         ren variablestmp variables.txt
+        echo All variables saved.
+        echo:
 
-:disclaimer
+:disclaimer2
     echo ==============================
     echo:
     echo SPT-AKI Start Script - Copyright^(C^) ^2023 - SaruShinobie
@@ -382,9 +448,6 @@ rem and 'startup.bat' files are joined.
     echo under certain conditions detailed in the GNUPL Version 3.0 ^(link below.^)
     echo You can view this document at ^(https://www.gnu.org/licenses/gpl-3.0^),
     echo or, in the 'LICENSE' file included with this program.
-    echo:
-    echo ==============================
-
     echo:
     echo This is version 1.0, the first proper release of this program.
     echo If you encounter bugs or workarounds, you can email me or message me on Discord.
@@ -608,37 +671,53 @@ rem and 'startup.bat' files are joined.
     if %firstRunComplete%==true goto :finalsplashscreen
 
 :q4fastmode
-        echo:
-        echo ==============================
-        echo:
-        echo **WOULD YOU LIKE TO ENABLE FAST MODE?**
-        echo:
-        echo Fast mode significantly cuts down on
-        echo excess delays to streamline startups,
-        echo but normal mode looks and feels a whole lot nicer.
-        echo:
-        echo If you're seeing this message, this is your
-        echo first time running this program.
-        echo:
-        :choice4
-            set choice4=
-            set /p choice4=Would you like to enable fast mode? [Y/N] 
-            if %choice4%==y (
-                    echo fastMode*true>> variables.txt
-                    echo firstRunComplete*true>> variables.txt
-                    echo Fast mode will be enabled next time you run the program.
-                    goto :finalsplashscreen
-            )
-                    if %choice4%==n (
-                    echo fastMode*false>> variables.txt
-                    echo firstRunComplete*true>> variables.txt
-                    echo Fast mode will not be enabled. && echo:
-                    goto :finalsplashscreen
-            )
-            echo Your answer was invalid. You can enter 'y' for yes or 'n' for no.
-            echo This is case sensitive, type in lowercase.
-            cls
+    echo:
+    echo ==============================
+    echo:
+    echo **WOULD YOU LIKE TO ENABLE FAST MODE?**
+    echo:
+    echo Fast mode significantly cuts down on
+    echo excess delays to streamline startups,
+    echo but normal mode looks and feels a whole lot nicer.
+    echo:
+    echo If you're seeing this message, this is your
+    echo first time running this program.
+    echo:
+    :choice5
+        set choice5=
+        set /p choice5=Would you like to enable fast mode? [Y/N] 
+        if %choice5%==y (
+            echo Set objFS = CreateObject^("Scripting.FileSystemObject"^)>> TMPfastmodereplace.vbs
+            echo strFile = "variables.txt">> TMPfastmodereplace.vbs
+            echo Set objFile = objFS.OpenTextFile^(strFile^)>> TMPfastmodereplace.vbs
+            echo Do Until objFile.AtEndOfStream>> TMPfastmodereplace.vbs
+            echo strLine = objFile.ReadLine>> TMPfastmodereplace.vbs
+            echo If InStr^(strLine,"fastMode=false"^)^> 0 then>> TMPfastmodereplace.vbs
+            echo strLine = Replace^(strLine,"fastMode=false", "fastMode=true"^)>> TMPfastmodereplace.vbs
+            echo End If>> TMPfastmodereplace.vbs
+            echo WScript.Echo strLine>> TMPfastmodereplace.vbs
+            echo Loop>> TMPfastmodereplace.vbs
+
+                cscript /nologo TMPfastmodereplace.vbs  > variablestmp
+                @timeout /t 1 >nul 2>&1
+                del variables.txt
+                del TMPfastmodereplace.vbs
+                @timeout /t 1 >nul 2>&1
+                ren variablestmp variables.txt
+                echo:
+                echo All variables saved.
+            echo Fast mode will be enabled next time you run the program.
             goto :finalsplashscreen
+        )
+        if %choice5%==n (
+            
+            echo Fast mode will not be enabled. && echo:
+            goto :finalsplashscreen
+        )
+        echo Your answer was invalid. You can enter 'y' for yes or 'n' for no.
+        echo This is case sensitive, type in lowercase.
+        cls
+        goto :q4fastmode
 
 :finalsplashscreen
     if %noDelays%==true goto :endofscript
@@ -668,20 +747,48 @@ rem and 'startup.bat' files are joined.
         echo Changes found, Saving variables...
         echo This may take a little longer than ten seconds.
 
-        rem replace old firstStartup variable with new one
+        rem replace old firstStartup variable with new one using temporary .vbs script
         rem replaces entire line because... yeah. it works. whatever.
-        cscript /nologo equalsignreplace.vbs  > variablestmp
-            @timeout /t 1 >nul 2>&1
-            del variables.txt
-            @timeout /t 2 >nul 2>&1
-        ren variablestmp variables.txt
-        cscript /nologo variablereplace.vbs  > variablestmp
-            @timeout /t 1 >nul 2>&1
-            del variables.txt
-            @timeout /t 2 >nul 2>&1
-            ren variablestmp variables.txt && echo New variable saved.
-            echo:
-            echo First startup complete. If you enabled fast mode, it will take effect next time you start this program.
+            echo Set objFS = CreateObject^("Scripting.FileSystemObject"^)>> TMPvariablereplace.vbs
+            echo strFile = "variables.txt">> TMPvariablereplace.vbs
+            echo Set objFile = objFS.OpenTextFile^(strFile^)>> TMPvariablereplace.vbs
+            echo Do Until objFile.AtEndOfStream>> TMPvariablereplace.vbs
+            echo strLine = objFile.ReadLine>> TMPvariablereplace.vbs
+            echo If InStr^(strLine,"firstRunComplete=false"^)^> 0 then>> TMPvariablereplace.vbs
+            echo strLine = Replace^(strLine,"firstRunComplete=false","firstRunComplete=true"^)>> TMPvariablereplace.vbs
+            echo End If>> TMPvariablereplace.vbs
+            echo WScript.Echo strLine>> TMPvariablereplace.vbs
+            echo Loop>> TMPvariablereplace.vbs
+
+                cscript /nologo TMPvariablereplace.vbs  > variablestmp
+                @timeout /t 1 >nul 2>&1
+                del variables.txt
+                del TMPvariablereplace.vbs
+                @timeout /t 1 >nul 2>&1
+                ren variablestmp variables.txt
+                echo:
+                echo All variables saved.
+
+            rem replace * with = in variables file
+            echo Set objFS = CreateObject^("Scripting.FileSystemObject"^)>> TMPequalsignreplace.vbs
+            echo strFile = "variables.txt">> TMPequalsignreplace.vbs
+            echo Set objFile = objFS.OpenTextFile^(strFile^)>> TMPequalsignreplace.vbs
+            echo Do Until objFile.AtEndOfStream>> TMPequalsignreplace.vbs
+            echo strLine = objFile.ReadLine>> TMPequalsignreplace.vbs
+            echo If InStr^(strLine,"*"^)^> 0 then>> TMPequalsignreplace.vbs
+            echo strLine = Replace^(strLine,"*","="^)>> TMPequalsignreplace.vbs
+            echo End If>> TMPequalsignreplace.vbs
+            echo WScript.Echo strLine>> TMPequalsignreplace.vbs
+            echo Loop>> TMPequalsignreplace.vbs
+
+                cscript /nologo TMPequalsignreplace.vbs  > variablestmp
+                @timeout /t 1 >nul 2>&1
+                del variables.txt
+                del TMPequalsignreplace.vbs
+                @timeout /t 1 >nul 2>&1
+                ren variablestmp variables.txt
+                echo Variable file reformatted...
+                echo:
     )
     echo:
     echo Console window will close in 10 seconds.
