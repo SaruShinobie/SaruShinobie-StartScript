@@ -35,7 +35,7 @@ rem THERE ARE CODE COMMENTS ABOVE EACH CATEGORY TO EXPLAIN WHAT THE CODE DOES, A
 
 rem sets console title and skips initial setup code if `variables.txt` file exists.
 rem gets variables from `variables.txt` and define them
-:startofssetup
+:startofsetup
     for /f "tokens=* eol=; delims==" %%G in (variables.txt) do set %%G
 
     title Console - Saru's SPT Auto Start Script SETUP
