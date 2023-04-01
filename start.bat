@@ -13,6 +13,11 @@ rem GNU General Public License for more details.
 rem You should have received a copy of the GNU General Public License
 rem along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+rem Current known bugs:
+rem Fast mode prompt at :endstartup doesn't work at all. The variable remains unchanged in the variables.txt file.
+rem Possible issues with variables/vbs scripts being written on top of eachother (contents duplicated). Can't replicate?
+rem NOT A BUG, but I seriously need to get someone else to test this code. There's probably more than a few workarounds/bugs I don't know about.
+
 :startofssetup
     for /f "tokens=* eol=; delims==" %%G in (variables.txt) do set %%G
 
