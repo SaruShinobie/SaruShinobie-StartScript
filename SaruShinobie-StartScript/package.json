@@ -1,9 +1,0 @@
-{
-    "name": "SaruStartScript",
-    "author": "SaruShinobie",
-    "license": "GNU General Public License Version 3",
-    "main": "",
-    "version": "1.0.0",
-    "akiVersion": "3.5.4",
-    "devdependencies": {}
-}
