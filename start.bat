@@ -111,9 +111,7 @@ rem after the directory is inputted, the console cd's to that folder to check if
     echo and copy the folder path from the top bar of the file explorer. 
     echo For example; "C:Windows/Program Files/SinglePlayerTarkov"
     echo:
-    echo DO NOT LEAVE A TRAILING SLASH.
-    echo:
-    echo **PROCEEDING WILL DELETE ANY PREVIOUS SAVED SETTINGS.**
+    echo ***DO NOT LEAVE A TRAILING SLASH.
     echo:
     set /p userdirectory="Enter your SPT install directory here: "
         rem directory and server file check
@@ -216,6 +214,8 @@ rem second user input question, user enters the type of drive their SPT install 
     echo will result in a faster process overall.
     echo Skipping will use the HDD preset as a default.
     echo:
+    echo ***IT IS HIGHLY RECOMMENDED TO USE CUSTOM TIMES.
+    echo:
     echo Accepted inputs are 'hdd' 'ssd' 'custom' and 'skip'
     echo:
     :choice1
@@ -226,8 +226,8 @@ rem second user input question, user enters the type of drive their SPT install 
                 echo useCustomTimes*false>> variables.txt
                 echo ;>> variables.txt
                 @timeout /t 1 >nul 2>&1
-                echo serverStartTimeHDD*20>> variables.txt
-                echo launcherStartTimeHDD*5>> variables.txt
+                echo serverStartTimeHDD*30>> variables.txt
+                echo launcherStartTimeHDD*8>> variables.txt
                 echo ;>> variables.txt
                 @timeout /t 1 >nul 2>&1
                 goto :q4shortcut
@@ -237,8 +237,8 @@ rem second user input question, user enters the type of drive their SPT install 
                 echo useCustomTimes*false>> variables.txt
                 echo ;>> variables.txt
                 @timeout /t 1 >nul 2>&1
-                echo serverStartTimeSSD*10>> variables.txt
-                echo launcherStartTimeSSD*4>> variables.txt
+                echo serverStartTimeSSD*20>> variables.txt
+                echo launcherStartTimeSSD*6>> variables.txt
                 echo ;>> variables.txt
                 @timeout /t 1 >nul 2>&1
                 goto :q4shortcut
@@ -248,8 +248,8 @@ rem second user input question, user enters the type of drive their SPT install 
                 echo useCustomTimes*false>> variables.txt
                 echo ;>> variables.txt
                 @timeout /t 1 >nul 2>&1
-                echo serverStartTimeHDD*20>> variables.txt
-                echo launcherStartTimeHDD*5>> variables.txt
+                echo serverStartTimeHDD*30>> variables.txt
+                echo launcherStartTimeHDD*8>> variables.txt
                 echo ;>> variables.txt
                 @timeout /t 1 >nul 2>&1
                 goto :q4shortcut
@@ -563,7 +563,7 @@ rem sends shortened disclaimer message to console with short timeout
     echo You can view this document at ^(https://www.gnu.org/licenses/gpl-3.0^),
     echo or, in the 'LICENSE' file included with this program.
     echo:
-    echo This is version 1.0, the first proper release of this program.
+    echo This is version 1.0.1, the first proper release of this program.
     echo If you encounter bugs or workarounds, you can email me or message me on Discord.
     echo:
     echo Email - sarushinobie@gmail.com 
