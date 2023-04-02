@@ -180,7 +180,7 @@ rem after the directory is inputted, the console cd's to that folder to check if
                 goto :q1directory
             )
 
-        set modFolderDirectory=%userdirectory%/user/mods/SaruShinobie-StartScript
+        set modFolderDirectory=%userdirectory%/user/mods/SaruShinobie-StartScript-1.0.0
         cd %modFolderDirectory%
         
         if exist variables.txt (
