@@ -35,7 +35,8 @@ rem THERE ARE CODE COMMENTS ABOVE EACH CATEGORY TO EXPLAIN WHAT THE CODE DOES, A
 
 rem sets console title and skips initial setup code if `variables.txt` file exists.
 rem gets variables from `variables.txt` and define them
-:startofsetup
+:startofssetup
+    cd /D %~dp0
     for /f "tokens=* eol=; delims==" %%G in (variables.txt) do set %%G
 
     title Console - Saru's SPT Auto Start Script SETUP
@@ -180,7 +181,7 @@ rem after the directory is inputted, the console cd's to that folder to check if
                 goto :q1directory
             )
 
-        set modFolderDirectory=%userdirectory%/user/mods/SaruShinobie-StartScript-1.0.0
+        set modFolderDirectory=%userdirectory%/user/mods/SaruShinobie-StartScript-1.0.1
         cd %modFolderDirectory%
         
         if exist variables.txt (
@@ -527,7 +528,6 @@ rem after variables are defined, checks if fastmode is on and the first run has 
         @timeout /t 1 >nul 2>&1
         del variables.txt
         del TMPequalsignreplace.vbs
-        @timeout /t 1 >nul 2>&1
         ren variablestmp variables.txt
         echo All variables saved.
         echo:
@@ -692,9 +692,7 @@ rem each loop; updates title with seconds remaining and animation frame, pauses 
     set /a loopcount=loopcount-1
     if %loopcount%==0 goto :launcherstart
 
-    echo Finished.
-    title Console - Saru's SPT Auto ^Start Script
-    goto :launcherstart
+    goto :loadingloop
 
     rem these commands are looped. changes title at an interval to 'animate' the title with a progressive '...' animation
     rem 'set' command sets the loop count variable to 'previous value - 1'
@@ -706,6 +704,8 @@ rem same process as :serverstart, this jumps back to the :loadingloop section, w
 rem sets `launcherstarted` value to true before starting the timer, and skips this section when it tries to run after :loadingloop if that value is true
 :launcherstart
 
+    echo Finished.
+    title Console - Saru's SPT Auto ^Start Script
     if %launcherstarted%==true goto :endstartup
 
     echo Starting Launcher ^(Aki.Launcher.exe^)...
