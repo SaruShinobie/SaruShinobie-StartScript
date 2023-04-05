@@ -2,13 +2,16 @@
 
 set fastModeQuestionAnswered==false
 set desktopQuestionAnswered==false
+set devMode==false
+set firstRunComplete==false
+set fastMode==false
+
 for /f "tokens=* delims=: " %%G in (variables.txt) do set %%G
+
 title Console - Saru's SPT Auto Start Script
 :checkforkey
     cd /D %~dp0 && cd dev
-    if exist sarushinobie.debugkey set devMode==true && echo: && echo: && echo Developer Mode Enabled. && echo: && echo: && goto :devModeTrue
-    set devMode==false
-    :devModeTrue
+    if exist sarushinobie.debugkey set devMode==true && echo: && echo: && echo Developer Mode Enabled. && echo: && echo:
     cd /D %~dp0
 
 rem This program is free software: you can redistribute it and/or modify
@@ -55,6 +58,9 @@ echo Creating Temp Scripts...
         cscript /nologo TMPsleep.vbs "20"
 
         cd .. && cd .. && cd ..
+        echo WScript.Sleep WScript.Arguments^(0^)> TMPsleep.vbs
+
+        cd EscapeFromTarkov_Data
         echo WScript.Sleep WScript.Arguments^(0^)> TMPsleep.vbs
         cd /D %~dp0
 
@@ -191,7 +197,7 @@ rem gets variables from `variables.txt` and define them
     echo You can view this document at ^(https://www.gnu.org/licenses/gpl-3.0^),
     echo or, in the 'LICENSE' file included with this program.
     echo:
-    cscript /nologo TMPsleep.vbs "2000"
+    if %firstRunComplete%==false cscript /nologo TMPsleep.vbs "2000"
     echo:
     echo This is version *2.0.0,* the third release of this program.
     echo If you encounter bugs or workarounds, you can email me or message me on Discord.
@@ -203,13 +209,13 @@ rem gets variables from `variables.txt` and define them
     echo:
     echo:
 
-    if not %firstRunComplete%=true (
+    if not %firstRunComplete%==true (
         cscript /nologo TMPsleep.vbs "6000"
         pause 
         cls
         goto :directorythings
     )
-    if %devMode%==false (
+    if %firstRunComplete%==true (
         cscript /nologo TMPsleep.vbs "3000"
         cls
         goto :directorythings
@@ -341,18 +347,20 @@ rem error - cant find launcher file
     echo:
     echo Picking random files...
     cd %installFolderDirectory%
-    cd EscapeFromTarkov_Data
     set /a randomnumber1=%random% %%400
     set tarkovfile1=sharedassets%randomnumber1%.assets
 
     set /a randomnumber2=%random% %%400
-    set tarkovfile2=sharedassets%randomnumber2%.assets
-
+    set tarkovfile2=sharedassets%randomnumber2%.asset
+    
+    cscript /nologo TMPsleep.vbs "100"
     echo  ^| %tarkovfile1% is your first random file.
+    cscript /nologo TMPsleep.vbs "100"
     echo  ^| %tarkovfile2% is your second random file.
     cscript /nologo TMPsleep.vbs "400"
     echo Checking that files exist...
 
+        cd EscapeFromTarkov_Data
         if not exist %tarkovfile1% (
             echo  ^| **First check failed. Filename: %tarkovfile1%
             cscript /nologo TMPsleep.vbs "250"
@@ -392,12 +400,15 @@ rem error - cant find launcher file
     if exist %tarkovfile1% echo  ^| First check passed.
     cscript /nologo TMPsleep.vbs "250"
     if exist %tarkovfile2% echo  ^| Second check passed.
+    cscript /nologo TMPsleep.vbs "250"
+    del TMPsleep.vbs
     cd %modFolderDirectory%
 
     echo Files found. Install is legitimate.
     echo:
     echo ==============================
     echo:
+    cscript /nologo TMPsleep.vbs "150"
 
 
 
@@ -475,12 +486,12 @@ rem processes finished message is echoed to console, and skips fastmode prompt i
     cd %modFolderDirectory%
     echo:
     echo All processes finished.
-    if %devMode%==false cscript /nologo TMPsleep.vbs "3000"
 
 
 
 if %fastModeQuestionAnswered%==true goto :finalsplashscreen
 :fastmode
+    if %devMode%==false cscript /nologo TMPsleep.vbs "2000"
     echo:
     echo ==============================
     echo:
