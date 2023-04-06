@@ -8,11 +8,15 @@ set fastMode==false
 
 for /f "tokens=* delims=: " %%G in (variables.txt) do set %%G
 
+
+
 title Console - Saru's SPT Auto Start Script
 :checkforkey
     cd /D %~dp0 && cd dev
     if exist sarushinobie.debugkey set devMode==true && echo: && echo: && echo Developer Mode Enabled. && echo: && echo:
     cd /D %~dp0
+
+
 
 rem This program is free software: you can redistribute it and/or modify
 rem it under the terms of the GNU General Public License as published by
@@ -36,6 +40,7 @@ rem THERE ARE CODE COMMENTS ABOVE EACH CATEGORY TO EXPLAIN WHAT THE CODE DOES, A
 
 :temporaryscripts
 echo Creating Temp Scripts...
+    rem long and brute script to delete vbs scripts in all the directories they're made in - too many.
     :tmpkiller
         echo @echo off> tmpkiller.bat
         echo set /a counter^=0 ^&^& cscript /nologo TMPsleep.vbs "1000">> tmpkiller.bat
@@ -46,12 +51,16 @@ echo Creating Temp Scripts...
         echo cscript /nologo TMPsleep.vbs "1000">> tmpkiller.bat
         echo if %%cmdinstances%% leq 1 ^(>> tmpkiller.bat
         echo    del TMPvariablereplace.vbs ^&^& del TMPloadingwheel.vbs ^&^& del TMPshortcutscript.vbs ^&^& del TMPvariablereformat.vbs ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs ^&^& del TMPcmdinstances>> tmpkiller.bat
-        echo    cd /D %%~dp0 ^&^& cd .. ^&^& cd .. ^&^& cd .. ^&^& del TMPservershortcutscript.vbs ^&^& cd /D %%~dp0>> tmpkiller.bat
+        echo    cd /D %%~dp0 ^&^& cd .. ^&^& cd .. ^&^& cd .. ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs ^&^& cd /D %%~dp0>> tmpkiller.bat
+        echo    cd EscapeFromTarkov_Data ^&^& del TMPsleep.vbs
         echo    ^(goto^) ^2^>nul ^& del "%%~f0" ^& exit>> tmpkiller.bat
         echo ^)>> tmpkiller.bat
         echo set /a counter^=counter+1 ^&^& goto ^:check>> tmpkiller.bat
 
+
+
     :TMPsleep
+        rem script to pause, designed to replace timeout command to avoid dropping nul files to hide cmd prompt messages and NOT TRIGGER VIRUSTOTAL??
         echo WScript.Sleep WScript.Arguments^(0^)> TMPsleep.vbs
 
         echo  ^| Created temporary pause script one.
@@ -67,8 +76,10 @@ echo Creating Temp Scripts...
         echo  ^| Created temporary pause script two.
         cscript /nologo TMPsleep.vbs "20"
 
-    :TMPservershortcutscript
 
+
+    :TMPservershortcutscript
+        rem creates shortcut to server file so it starts minimized.
         cd /D %~dp0
         cd .. && cd .. && cd ..
 
@@ -86,7 +97,10 @@ echo Creating Temp Scripts...
             echo  ^| Created temporary server shortcut creation script.
             cscript /nologo TMPsleep.vbs "20"
 
+
+
     :TMPshortcutscript
+        rem creates shortcut to this file and sends it to the desktop.
         echo dynamicDirectory = CreateObject^("Scripting.FileSystemObject"^).GetParentFolderName^(WScript.ScriptFullName^)> TMPshortcutscript.vbs
         echo Set WshShell = CreateObject^("WScript.Shell"^)>> TMPshortcutscript.vbs
         echo strDesktopPath = WshShell.SpecialFolders^("Desktop"^)>> TMPshortcutscript.vbs
@@ -99,7 +113,10 @@ echo Creating Temp Scripts...
         echo  ^| Created temporary shortcut creation script.
         cscript /nologo TMPsleep.vbs "20"
 
+
+
     :TMPvariablereplace
+        rem should replace variable in variables.txt file, but i dont believe its used as of now. better to have it than not.
         echo Set objFS = CreateObject^("Scripting.FileSystemObject"^)> TMPvariablereplace.vbs
         echo strFile = "variables.txt">> TMPvariablereplace.vbs
         echo Set objFile = objFS.OpenTextFile^(strFile^)>> TMPvariablereplace.vbs
@@ -114,7 +131,10 @@ echo Creating Temp Scripts...
         echo  ^| Created temporary variable replace script.
         cscript /nologo TMPsleep.vbs "20"
 
+
+
     :TMPvariablereformat
+        rem replace all of one character or string with another character/string. 
         echo Set objFS = CreateObject^("Scripting.FileSystemObject"^)> TMPvariablereformat.vbs
         echo strFile = "variables.txt">> TMPvariablereformat.vbs
         echo Set objFile = objFS.OpenTextFile^(strFile^)>> TMPvariablereformat.vbs
@@ -129,24 +149,35 @@ echo Creating Temp Scripts...
         echo  ^| Created temporary variable reformat script.
         cscript /nologo TMPsleep.vbs "20"
 
+
+
     :TMPloadingwheel
+        rem loading animation script without 'Loading...' message
         echo WScript.StdOut.Write^(chr^(8^) ^& WScript.Arguments^(0^)^)> TMPloadingwheel.vbs
 
         echo  ^| Created temporary loading wheel ^(#1^) script.
         cscript /nologo TMPsleep.vbs "20"
 
+
+
     :TMPloadingwheelwithmessage
+        rem script behind the loading progress animation... not used enough. looks good. use more. 
         echo WScript.StdOut.Write^(chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& WScript.Arguments^(0^)^)> TMPloadingwheel.vbs
         
         echo  ^| Created temporary loading wheel ^(#2^) script.
         cscript /nologo TMPsleep.vbs "40"
+
+
 
     :endscriptcreation
         echo:
         echo All scripts have been saved.
         echo:
 
+
+
 :serverFileShortcutCreate
+    rem pre-creates shortcut to server file 
     cd /D %~dp0
     cd .. && cd .. && cd ..
     cscript /nologo TMPservershortcutscript.vbs
@@ -157,15 +188,17 @@ echo Creating Temp Scripts...
 
 
 :tempfilekiller
+    rem starts tmpkiller.bat
     if %devMode%==true cscript /nologo TMPsleep.vbs "1500"
     @start /min tmpkiller.bat
     echo Started temporary script cleaner.
     if %devMode%==true cscript /nologo TMPsleep.vbs "1000"
 
 
-rem sets console title and skips initial setup code if `variables.txt` file exists.
-rem gets variables from `variables.txt` and define them
+
 :start
+    rem checks for variables.txt file... not very much point right now?
+    rem all checks seem to work okay without any intervention. leaving as a just-in-case.
     cd /D %~dp0
     if exist variables.txt (
         echo Retrieving saved settings...
@@ -180,6 +213,7 @@ rem gets variables from `variables.txt` and define them
 
 
 :disclaimer
+        rem skips disclaimer if dev mode is on & if first run is complete skip delays
         if %devMode%==true  goto :directorythings
     cscript /nologo TMPsleep.vbs "2000"
     cls
@@ -223,11 +257,11 @@ rem gets variables from `variables.txt` and define them
 
 
 
-rem points to the folder that the batch file is in, and goes up three folders in the path to get to the spt root folder
+rem points to the folder that the batch file is in, and goes up three folders in the path to get to the spt root folder.
 :directorythings
     rem essentially, C:/spt/user/mods/startscriptmodfolder
-    rem                  ^  batch file here^
-    rem        goes here ^
+    rem                  ^  batch file here ^
+    rem       point here ^
     if exist variables.txt goto :enddirectorysetup
 
     cd /D %~dp0
@@ -250,7 +284,7 @@ rem points to the folder that the batch file is in, and goes up three folders in
 
 
 
-rem error for when directory is invalid
+rem error for when directory is invalid.
 :firsterror-dir
     if errorlevel 1 (
         cls
@@ -281,7 +315,7 @@ rem error for when directory is invalid
 
 
 
-rem error - cant find server file
+rem error - cant find server file.
 :seconderror-server
     if not exist Aki.Server.exe (
         cls
@@ -312,7 +346,7 @@ rem error - cant find server file
 
 
 
-rem error - cant find launcher file
+rem error - cant find launcher file.
 :thirdderror-launcher
     if not exist Aki.Launcher.exe (
         cls
@@ -344,6 +378,9 @@ rem error - cant find launcher file
 
 
 :randomfilecheck
+    rem uses the data files in EscapeFromTarkov_Data and their numbering to check if the install is legit.
+    rem uses a random number generator to pick a number between the first and last data file numbers and checks if the two files picked exist in the user's directory.
+    rem some file numbers are just... skipped. because BSG. Two checks are necessary because of it, to prevent false flags.
     echo:
     echo Picking random files...
     cd %installFolderDirectory%
@@ -414,6 +451,7 @@ rem error - cant find launcher file
 
 if %desktopQuestionAnswered%==true goto :startup
 :desktopshortcut
+    rem create desktop shortcut.
     echo **WOULD YOU LIKE TO CREATE A SHORTCUT TO SPT ON YOUR DESKTOP?**
     echo:
     echo This program can send a shortcut to itself to your desktop,
@@ -447,6 +485,7 @@ if %desktopQuestionAnswered%==true goto :startup
 
 
 :startup
+    rem start server, use shortcut so it starts minimized.
     cd %installFolderDirectory%
     echo Starting Server ^(Aki.Server.exe^)...
     @start Aki.Server.Shortcut.lnk
@@ -456,6 +495,7 @@ if %desktopQuestionAnswered%==true goto :startup
 
 
 :loop
+    rem loading animation.
     cscript //nologo TMPloadingwheel.vbs "Loading... \" 
         cscript //nologo TMPsleep.vbs "400"
     cscript //nologo TMPloadingwheel.vbs "Loading... |"
@@ -481,7 +521,6 @@ if %desktopQuestionAnswered%==true goto :startup
 
 
 
-rem processes finished message is echoed to console, and skips fastmode prompt if the program has been run before
 :endstartup
     cd %modFolderDirectory%
     echo:
