@@ -45,12 +45,12 @@ echo Creating Temp Scripts...
         echo @echo off> tmpkiller.bat
         echo set /a counter^=0 ^&^& cscript /nologo TMPsleep.vbs "1000">> tmpkiller.bat
         echo ^:check>> tmpkiller.bat
-        echo wmic process where name^="cmd.exe" ^| find "cmd.exe" /c^> TMPcmdinstances>> tmpkiller.bat
+        echo wmic process where name^="cmd.exe" ^| find "cmd.exe" /c^> TMPcmdinstances.txt>> tmpkiller.bat
         echo cls ^&^& echo Checks Performed^: %%counter%% ^&^& echo Don't close this window, it will close itself.>> tmpkiller.bat
-        echo set /p cmdinstances= ^< TMPcmdinstances>> tmpkiller.bat
+        echo set /p cmdinstances= ^< TMPcmdinstances.txt>> tmpkiller.bat
         echo cscript /nologo TMPsleep.vbs "1000">> tmpkiller.bat
         echo if %%cmdinstances%% leq 1 ^(>> tmpkiller.bat
-        echo    del TMPvariablereplace.vbs ^&^& del TMPloadingwheel.vbs ^&^& del TMPshortcutscript.vbs ^&^& del TMPvariablereformat.vbs ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs ^&^& del TMPcmdinstances>> tmpkiller.bat
+        echo    del TMPprograminstances.txt ^&^& del TMPvariablereplace.vbs ^&^& del TMPloadingwheel.vbs ^&^& del TMPshortcutscript.vbs ^&^& del TMPvariablereformat.vbs ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs ^&^& del TMPcmdinstances.txt>> tmpkiller.bat
         echo    cd /D %%~dp0 ^&^& cd .. ^&^& cd .. ^&^& cd .. ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs ^&^& cd /D %%~dp0>> tmpkiller.bat
         echo    cd EscapeFromTarkov_Data ^&^& del TMPsleep.vbs>> tmpkiller.bat
         echo    ^(goto^) ^2^>nul ^& del "%%~f0" ^& exit>> tmpkiller.bat
@@ -394,7 +394,7 @@ rem error - cant find launcher file.
     echo  ^| %tarkovfile1% is your first random file.
     cscript /nologo TMPsleep.vbs "100"
     echo  ^| %tarkovfile2% is your second random file.
-    cscript /nologo TMPsleep.vbs "400"
+    cscript /nologo TMPsleep.vbs "200"
     echo Checking that files exist...
 
         cd EscapeFromTarkov_Data
@@ -435,9 +435,9 @@ rem error - cant find launcher file.
         )
 
     if exist %tarkovfile1% echo  ^| First check passed.
-    cscript /nologo TMPsleep.vbs "250"
+    cscript /nologo TMPsleep.vbs "150"
     if exist %tarkovfile2% echo  ^| Second check passed.
-    cscript /nologo TMPsleep.vbs "250"
+    cscript /nologo TMPsleep.vbs "150"
     del TMPsleep.vbs
     cd %modFolderDirectory%
 
@@ -445,7 +445,7 @@ rem error - cant find launcher file.
     echo:
     echo ==============================
     echo:
-    cscript /nologo TMPsleep.vbs "150"
+    cscript /nologo TMPsleep.vbs "250"
 
 
 
@@ -488,7 +488,6 @@ if %desktopQuestionAnswered%==true goto :startup
     rem start server, use shortcut so it starts minimized.
     rem netstat program writes to nul file... so using a sleep script is kinda stupid now. maybe fix? maybe not?
     rem added check to skip the startup process if the server is already up.
-    netstat -o -n -a | findstr 6969 >nul 2>&1 && if %ERRORLEVEL%==0 goto :endloop
     cd %installFolderDirectory%
     echo Starting Server ^(Aki.Server.exe^)...
     @start Aki.Server.Shortcut.lnk
@@ -499,6 +498,7 @@ if %desktopQuestionAnswered%==true goto :startup
 
 :loop
     rem loading animation.
+    netstat -o -n -a | findstr 6969 >nul 2>&1 && if %ERRORLEVEL%==0 goto :endloop
     cscript //nologo TMPloadingwheel.vbs "Loading... \" 
         cscript //nologo TMPsleep.vbs "400"
     cscript //nologo TMPloadingwheel.vbs "Loading... |"
@@ -507,12 +507,27 @@ if %desktopQuestionAnswered%==true goto :startup
         cscript //nologo TMPsleep.vbs "400"
     cscript //nologo TMPloadingwheel.vbs "Loading... -"
         cscript //nologo TMPsleep.vbs "400"
-    netstat -o -n -a | findstr 6969 >nul 2>&1 && if %ERRORLEVEL%==0 goto :endloop
     goto :loop
 
 
 
 :endloop
+
+    wmic process where name="Aki.Server.exe" | find "Aki.Server.exe" /c> TMPprograminstances.txt
+    set /p programinstances= < TMPprograminstances.txt
+    if %programinstances% gtr 1 (
+        echo More than one process detected, closing all and restarting...
+
+        :killtask
+        taskkill /IM Aki.Server.exe> nul
+        wmic process where name="Aki.Server.exe" | find "Aki.Server.exe" /c> TMPprograminstances.txt
+        cscript //nologo TMPsleep.vbs "100"
+        set /p programinstances= < TMPprograminstances.txt
+        if %programinstances% gtr 1 goto :killtask
+        if %programinstances%==0 goto :startup
+        goto :killtask
+    )
+
     echo Server started.
 
     cd %installFolderDirectory%
@@ -593,7 +608,9 @@ if %fastModeQuestionAnswered%==true goto :finalsplashscreen
 
 
 :endscript-clean
-    echo firstRunComplete=true>> variables.txt
+    if %firstRunComplete%==false (
+        echo firstRunComplete=true>> variables.txt
+    )
     cscript /nologo TMPsleep.vbs "6000"
     exit
 
