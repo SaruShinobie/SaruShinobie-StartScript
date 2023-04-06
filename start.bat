@@ -52,7 +52,7 @@ echo Creating Temp Scripts...
         echo if %%cmdinstances%% leq 1 ^(>> tmpkiller.bat
         echo    del TMPvariablereplace.vbs ^&^& del TMPloadingwheel.vbs ^&^& del TMPshortcutscript.vbs ^&^& del TMPvariablereformat.vbs ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs ^&^& del TMPcmdinstances>> tmpkiller.bat
         echo    cd /D %%~dp0 ^&^& cd .. ^&^& cd .. ^&^& cd .. ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs ^&^& cd /D %%~dp0>> tmpkiller.bat
-        echo    cd EscapeFromTarkov_Data ^&^& del TMPsleep.vbs
+        echo    cd EscapeFromTarkov_Data ^&^& del TMPsleep.vbs>> tmpkiller.bat
         echo    ^(goto^) ^2^>nul ^& del "%%~f0" ^& exit>> tmpkiller.bat
         echo ^)>> tmpkiller.bat
         echo set /a counter^=counter+1 ^&^& goto ^:check>> tmpkiller.bat
@@ -486,6 +486,9 @@ if %desktopQuestionAnswered%==true goto :startup
 
 :startup
     rem start server, use shortcut so it starts minimized.
+    rem netstat program writes to nul file... so using a sleep script is kinda stupid now. maybe fix? maybe not?
+    rem added check to skip the startup process if the server is already up.
+    netstat -o -n -a | findstr 6969 >nul 2>&1 && if %ERRORLEVEL%==0 goto :endloop
     cd %installFolderDirectory%
     echo Starting Server ^(Aki.Server.exe^)...
     @start Aki.Server.Shortcut.lnk
