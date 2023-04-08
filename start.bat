@@ -1,5 +1,13 @@
 @echo off
 
+cd /D %~dp0
+set modFolderDirectory=%cd%
+
+cd .. && cd .. && cd ..
+set installFolderDirectory=%cd%
+
+cd %modFolderDirectory%
+
 set fastModeQuestionAnswered==false
 set desktopQuestionAnswered==false
 set devMode==false
@@ -12,9 +20,9 @@ for /f "tokens=* delims=: " %%G in (variables.txt) do set %%G
 
 title Console - Saru's SPT Auto Start Script
 :checkforkey
-    cd /D %~dp0 && cd dev
+    cd dev> nul
     if exist sarushinobie.debugkey set devMode==true && echo: && echo: && echo Developer Mode Enabled. && echo: && echo:
-    cd /D %~dp0
+    cd %modFolderDirectory%
 
 
 
@@ -71,31 +79,10 @@ echo Creating Temp Scripts...
 
         cd EscapeFromTarkov_Data
         echo WScript.Sleep WScript.Arguments^(0^)> TMPsleep.vbs
-        cd /D %~dp0
+        cd %modFolderDirectory%
 
         echo  ^| Created temporary pause script two.
         cscript /nologo TMPsleep.vbs "20"
-
-
-
-    :TMPservershortcutscript
-        rem creates shortcut to server file so it starts minimized.
-        cd /D %~dp0
-        cd .. && cd .. && cd ..
-
-        echo Set objShell = WScript.CreateObject^("WScript.Shell"^)>> TMPservershortcutscript.vbs
-        echo strCurDir = objShell.CurrentDirectory>> TMPservershortcutscript.vbs
-        echo Set lnk = objShell.CreateShortcut^("Aki.Server.Shortcut.lnk"^)>> TMPservershortcutscript.vbs
-        echo lnk.TargetPath = strCurDir ^& "\Aki.Server.exe">> TMPservershortcutscript.vbs
-        echo lnk.Description = "SPT Server Shortcut - Minimized">> TMPservershortcutscript.vbs
-        echo lnk.WindowStyle = "7">> TMPservershortcutscript.vbs
-        echo lnk.WorkingDirectory = strCurDir>> TMPservershortcutscript.vbs
-        echo lnk.Save>> TMPservershortcutscript.vbs
-
-        cd /D %~dp0
-
-            echo  ^| Created temporary server shortcut creation script.
-            cscript /nologo TMPsleep.vbs "20"
 
 
 
@@ -107,7 +94,7 @@ echo Creating Temp Scripts...
         echo Set objShortcutUrl = WshShell.CreateShortcut^(strDesktopPath ^& "\SinglePlayerTarkov.lnk"^)>> TMPshortcutscript.vbs
         echo objShortcutUrl.TargetPath = dynamicDirectory ^& "\start.bat">> TMPshortcutscript.vbs
         echo objShortcutUrl.Description = "Start SPT">> TMPshortcutscript.vbs
-        echo objShortcutUrl.IconLocation = dynamicDirectory ^& "\logo.ico">> TMPshortcutscript.vbs
+        echo objShortcutUrl.IconLocation = dynamicDirectory ^& WScript.Arguments^(0^)>> TMPshortcutscript.vbs
         echo objShortcutUrl.Save>> TMPshortcutscript.vbs
 
         echo  ^| Created temporary shortcut creation script.
@@ -176,30 +163,17 @@ echo Creating Temp Scripts...
 
 
 
-:serverFileShortcutCreate
-    rem pre-creates shortcut to server file 
-    cd /D %~dp0
-    cd .. && cd .. && cd ..
-    cscript /nologo TMPservershortcutscript.vbs
-    cd /D %~dp0
-    cscript /nologo TMPsleep.vbs "500"
-    echo Created server shortcut.
-
-
-
 :tempfilekiller
     rem starts tmpkiller.bat
-    if %devMode%==true cscript /nologo TMPsleep.vbs "1500"
-    @start /min tmpkiller.bat
-    echo Started temporary script cleaner.
-    if %devMode%==true cscript /nologo TMPsleep.vbs "1000"
+    @start /min tmpkiller.bat && echo Started temporary script cleaner.
+    if %devMode%==false cscript /nologo TMPsleep.vbs "40"
 
 
 
 :start
     rem checks for variables.txt file... not very much point right now?
     rem all checks seem to work okay without any intervention. leaving as a just-in-case.
-    cd /D %~dp0
+    cd %modFolderDirectory%
     if exist variables.txt (
         echo Retrieving saved settings...
         echo:
@@ -215,13 +189,13 @@ echo Creating Temp Scripts...
 :disclaimer
         rem skips disclaimer if dev mode is on & if first run is complete skip delays
         if %devMode%==true  goto :directorythings
-    cscript /nologo TMPsleep.vbs "2000"
+    cscript /nologo TMPsleep.vbs "1000"
     cls
     echo:
     echo:
     echo:
     echo:
-    echo ==============================
+    echo ============================================================
     echo:
     echo Start Script SETUP - Copyright^(C^) ^2023 - SaruShinobie
     echo:
@@ -239,21 +213,22 @@ echo Creating Temp Scripts...
     echo Email - sarushinobie@gmail.com 
     echo Discord - SaruShinobie#8639  ^(**FASTER^)
     echo:
-    echo ==============================
+    echo ============================================================
     echo:
     echo:
 
-    if not %firstRunComplete%==true (
-        cscript /nologo TMPsleep.vbs "6000"
-        pause 
-        cls
-        goto :directorythings
-    )
+    cd %modFolderDirectory%
+    
     if %firstRunComplete%==true (
-        cscript /nologo TMPsleep.vbs "3000"
+        cscript /nologo TMPsleep.vbs "2500"
         cls
         goto :directorythings
     )
+
+    cscript /nologo TMPsleep.vbs "4000"
+    pause
+    cls
+    goto :directorythings
 
 
 
@@ -263,12 +238,6 @@ rem points to the folder that the batch file is in, and goes up three folders in
     rem                  ^  batch file here ^
     rem       point here ^
     if exist variables.txt goto :enddirectorysetup
-
-    cd /D %~dp0
-    set modFolderDirectory=%cd%
-
-    cd .. && cd .. && cd ..
-    set installFolderDirectory=%cd%
 
     cd /D %modFolderDirectory%
         echo ; This file contains your saved settings. If you plan on modifying this, just ensure that you format it correctly.> variables.txt
@@ -306,7 +275,7 @@ rem error for when directory is invalid.
         echo "%modFolderDirectory%" is the current directory of the mod folder.
         echo Exit code %errorlevel%, Error 01 - Invalid Directory.
         echo:
-        echo ==============================
+        echo ============================================================
         echo:
         goto :endscript-error
     )
@@ -337,7 +306,7 @@ rem error - cant find server file.
         echo "%modFolderDirectory%" is the current directory of the mod folder.
         echo Exit code %errorlevel%, Error 02 - Server File Not found.
         echo:
-        echo ==============================
+        echo ============================================================
         echo:
         goto :endscript-error
     )
@@ -368,7 +337,7 @@ rem error - cant find launcher file.
         echo "%modFolderDirectory%" is the current directory of the mod folder.
         echo Exit code %errorlevel%, Error 03 - Launcher File Not found.
         echo:
-        echo ==============================
+        echo ============================================================
         echo:
         goto :endscript-error
     )
@@ -388,69 +357,76 @@ rem error - cant find launcher file.
     set tarkovfile1=sharedassets%randomnumber1%.assets
 
     set /a randomnumber2=%random% %%400
-    set tarkovfile2=sharedassets%randomnumber2%.asset
-    
-    cscript /nologo TMPsleep.vbs "100"
+    set tarkovfile2=sharedassets%randomnumber2%.assets
+
     echo  ^| %tarkovfile1% is your first random file.
-    cscript /nologo TMPsleep.vbs "100"
+    cscript /nologo TMPsleep.vbs "50"
     echo  ^| %tarkovfile2% is your second random file.
-    cscript /nologo TMPsleep.vbs "200"
+    cscript /nologo TMPsleep.vbs "50"
     echo Checking that files exist...
 
-        cd EscapeFromTarkov_Data
-        if not exist %tarkovfile1% (
-            echo  ^| **First check failed. Filename: %tarkovfile1%
-            cscript /nologo TMPsleep.vbs "250"
-            if not exist %tarkovfile2% (
-                echo  ^| **Second check failed. Filename: %tarkovfile2%
+    cd EscapeFromTarkov_Data
 
-                cls
-                title Console - Saru's SPT Auto ^Start Script - *ERROR, FILE CHECK FAILED*
-                echo Could not find the random data file.
-                echo:
-                echo Check that you have a legitimate copy of Escape From Tarkov/SPT installed.
-                echo This check may sometimes fail despite your install being fully functional,
-                echo although this is extremely rare as there are two separate checks. 
-                echo If this happens, you can simply retry.
-                echo:
-                echo Press a key to close this window when ready.
-                echo          __
-                echo   _     / /
-                echo  ^(_^)   / / 
-                echo       / /  
-                echo   _  / /   
-                echo  ^(_^)/ /    
-                echo    /_/ 
-                echo:
-                echo "%tarkovfile1%" and "%tarkovfile2%" are the random files chosen.
-                echo If you want to help me fix the issue, send the file names to me. Contact info below.
-                echo ^("SaruShinobie#8639" on discord / "sarushinobie@gmail.com"^)
-                echo:
-                echo Exit code %errorlevel%, Error 04 - File Check Failed.
-                echo:
-                echo ==============================
-                echo:
-                goto :endscript-error
-            )
+    if not exist %tarkovfile1% (
+        echo  ^| First check failed. ^(%tarkovfile1%^)
+        set /a filecheck1=0
+        cscript /nologo TMPsleep.vbs "50"
+    )
+    if exist %tarkovfile1% (
+        echo  ^| First check passed. ^(%tarkovfile1%^)
+        set /a filecheck1=1
+        cscript /nologo TMPsleep.vbs "50"
+    )
+    if not exist %tarkovfile2% (
+        echo  ^| Second check failed. ^(%tarkovfile2%^)
+        set /a filecheck2=0
+        cscript /nologo TMPsleep.vbs "50"
         )
+    if exist %tarkovfile2% (
+        set /a filecheck2=1
+        echo  ^| Second check passed. ^(%tarkovfile2%^)
+        cscript /nologo TMPsleep.vbs "50"
+    )
 
-    if exist %tarkovfile1% echo  ^| First check passed.
-    cscript /nologo TMPsleep.vbs "150"
-    if exist %tarkovfile2% echo  ^| Second check passed.
-    cscript /nologo TMPsleep.vbs "150"
-    del TMPsleep.vbs
+    set filecheck_total=filecheck1+filecheck2
+    if %filecheck_total%==0 (
+        cls
+        title Console - Saru's SPT Auto ^Start Script - *ERROR, SERVER*
+        echo Could not find Escape from Tarkov data files.
+        echo:
+        echo Check that your have SPT and a legitimate copy of EFT installedm
+        echo and that your mod folder is placed in the correct install directory.
+        echo:
+        echo Press a key to close this window when ready.
+        echo          __
+        echo   _     / /
+        echo  ^(_^)   / / 
+        echo       / /  
+        echo   _  / /   
+        echo  ^(_^)/ /    
+        echo    /_/ 
+        echo:
+        echo "%modFolderDirectory%" is the current directory of the mod folder.
+        echo Random file 1: %tarkovfile1%
+        echo Random file 2: %tarkovfile2%
+        echo Exit code %errorlevel%, Error 04 - Install Check Failed.
+        echo:
+        echo ============================================================
+        echo:
+        goto :endscript-error
+    )
+
     cd %modFolderDirectory%
 
     echo Files found. Install is legitimate.
     echo:
-    echo ==============================
     echo:
-    cscript /nologo TMPsleep.vbs "250"
+    cscript /nologo TMPsleep.vbs "100"
 
 
 
-if %desktopQuestionAnswered%==true goto :startup
 :desktopshortcut
+    if %desktopQuestionAnswered%==true goto :fastmode
     rem create desktop shortcut.
     echo **WOULD YOU LIKE TO CREATE A SHORTCUT TO SPT ON YOUR DESKTOP?**
     echo:
@@ -458,24 +434,37 @@ if %desktopQuestionAnswered%==true goto :startup
     echo so you can start Tarkov as easily as possible.
     echo This will not show up on any other user's desktops on your device.
     echo:
+    echo Answer 'LIGHT' for an icon better for dark desktops, 'DARK' for light desktops,
+    echo or answer 'SKIP' to not create a shortcut. This is not case sensitive.
+    echo:
     :choice2
         set choice2=
-        set /p choice2=Would you like to create a desktop shortcut to Single Player Tarkov? [Y/N] 
-        if /I %choice2%==y (
+        set /p choice2=Would you like to create a desktop shortcut to Single Player Tarkov? Answer with 'LIGHT', 'DARK', and 'SKIP'. 
+        if /I %choice2%==light (
             echo desktopQuestionAnswered=true>> variables.txt
             echo:
             echo Creating shortcut...
-            cd /D %~dp0
-            cscript /nologo TMPshortcutscript.vbs
-            cscript /nologo TMPsleep.vbs "2000"
+            cd %modFolderDirectory%
+            cscript /nologo TMPshortcutscript.vbs "/res/logoLight.ico"
+            cscript /nologo TMPsleep.vbs "1000"
             cd %installFolderDirectory%
-            goto :startup
+            goto :fastmode
         )
-        if /I %choice2%==n (
+        if /I %choice2%==dark (
+            echo desktopQuestionAnswered=true>> variables.txt
+            echo:
+            echo Creating shortcut...
+            cd %modFolderDirectory%
+            cscript /nologo TMPshortcutscript.vbs "/res/logoDark.ico"
+            cscript /nologo TMPsleep.vbs "1000"
+            cd %installFolderDirectory%
+            goto :fastmode
+        )
+        if /I %choice2%==skip (
             echo desktopQuestionAnswered=true>> variables.txt
             echo A shortcut will not be created.
             cd %installFolderDirectory%
-            goto :startup
+            goto :fastmode
         )
         echo Your answer was invalid. You can enter 'y' for yes or 'n' for no.
         pause
@@ -484,73 +473,11 @@ if %desktopQuestionAnswered%==true goto :startup
 
 
 
-:startup
-    rem start server, use shortcut so it starts minimized.
-    rem netstat program writes to nul file... so using a sleep script is kinda stupid now. maybe fix? maybe not?
-    rem added check to skip the startup process if the server is already up.
-    cd %installFolderDirectory%
-    echo Starting Server ^(Aki.Server.exe^)...
-    @start Aki.Server.Shortcut.lnk
-
-    cd %modFolderDirectory%
-
-
-
-:loop
-    rem loading animation.
-    netstat -o -n -a | findstr 6969 >nul 2>&1 && if %ERRORLEVEL%==0 goto :endloop
-    cscript //nologo TMPloadingwheel.vbs "Loading... \" 
-        cscript //nologo TMPsleep.vbs "400"
-    cscript //nologo TMPloadingwheel.vbs "Loading... |"
-        cscript //nologo TMPsleep.vbs "400"
-    cscript //nologo TMPloadingwheel.vbs "Loading... /"
-        cscript //nologo TMPsleep.vbs "400"
-    cscript //nologo TMPloadingwheel.vbs "Loading... -"
-        cscript //nologo TMPsleep.vbs "400"
-    goto :loop
-
-
-
-:endloop
-
-    wmic process where name="Aki.Server.exe" | find "Aki.Server.exe" /c> TMPprograminstances.txt
-    set /p programinstances= < TMPprograminstances.txt
-    if %programinstances% gtr 1 (
-        echo More than one process detected, closing all and restarting...
-
-        :killtask
-        taskkill /IM Aki.Server.exe> nul
-        wmic process where name="Aki.Server.exe" | find "Aki.Server.exe" /c> TMPprograminstances.txt
-        cscript //nologo TMPsleep.vbs "100"
-        set /p programinstances= < TMPprograminstances.txt
-        if %programinstances% gtr 1 goto :killtask
-        if %programinstances%==0 goto :startup
-        goto :killtask
-    )
-
-    echo Server started.
-
-    cd %installFolderDirectory%
-    echo Starting launcher ^(Aki.Launcher.exe^)...
-    @start Aki.Launcher.exe
-    cscript //nologo TMPsleep.vbs "5000"
-
-    echo Launcher started.
-
-
-
-:endstartup
-    cd %modFolderDirectory%
-    echo:
-    echo All processes finished.
-
-
-
-if %fastModeQuestionAnswered%==true goto :finalsplashscreen
 :fastmode
+    if %fastModeQuestionAnswered%==true goto :startup
     if %devMode%==false cscript /nologo TMPsleep.vbs "2000"
     echo:
-    echo ==============================
+    echo ============================================================
     echo:
     echo **WOULD YOU LIKE TO ENABLE FAST MODE?**
     echo:
@@ -586,24 +513,175 @@ if %fastModeQuestionAnswered%==true goto :finalsplashscreen
 
 
 
+:startup
+    rem start server, use shortcut so it starts minimized.
+    rem netstat program writes to nul file... so using a sleep script is kinda stupid now. maybe fix? maybe not?
+    rem added check to skip the startup process if the server is already up.
+    cd %installFolderDirectory%
+    echo:
+    echo ============================================================
+    echo:
+    echo Starting Server ^(Aki.Server.exe^)...
+    @start Aki.Server.exe
+
+    cd %modFolderDirectory%
+
+    cscript //nologo TMPsleep.vbs "1000"
+
+
+
+:loop1
+    rem loading animation.
+    cscript //nologo TMPloadingwheel.vbs "Loading... \" 
+        cscript //nologo TMPsleep.vbs "400"
+    cscript //nologo TMPloadingwheel.vbs "Loading... |"
+        cscript //nologo TMPsleep.vbs "400"
+    cscript //nologo TMPloadingwheel.vbs "Loading... /"
+        cscript //nologo TMPsleep.vbs "400"
+    cscript //nologo TMPloadingwheel.vbs "Loading... -"
+        cscript //nologo TMPsleep.vbs "400"
+    netstat -o -n -a | findstr 6969 >nul 2>&1 && if %ERRORLEVEL%==0 goto :endloop
+    goto :loop1
+
+
+
+:endloop
+
+    wmic process where name="Aki.Server.exe" | find "Aki.Server.exe" /c> TMPprograminstances.txt
+    set /p programinstances= < TMPprograminstances.txt
+    if %programinstances% gtr 1 (
+        echo:
+        echo More than one process detected, closing all and restarting...
+
+        :killtask
+        taskkill /F /IM Aki.Server.exe> nul
+        wmic process where name="Aki.Server.exe" | find "Aki.Server.exe" /c> TMPprograminstances.txt
+        cscript //nologo TMPsleep.vbs "100"
+        set /p programinstances= < TMPprograminstances.txt
+        if %programinstances% gtr 1 goto :killtask
+
+        cscript //nologo TMPsleep.vbs "500"
+        cd %installFolderDirectory%
+        @start Aki.Server.exe
+        cd %modFolderDirectory%
+        cscript //nologo TMPsleep.vbs "2000"
+        :loop2
+            cscript //nologo TMPloadingwheel.vbs "Loading... \" 
+                cscript //nologo TMPsleep.vbs "700"
+            cscript //nologo TMPloadingwheel.vbs "Loading... |"
+                cscript //nologo TMPsleep.vbs "700"
+            cscript //nologo TMPloadingwheel.vbs "Loading... /"
+                cscript //nologo TMPsleep.vbs "700"
+            cscript //nologo TMPloadingwheel.vbs "Loading... -"
+                cscript //nologo TMPsleep.vbs "700"
+            netstat -o -n -a | findstr 6969 >nul 2>&1 && if %ERRORLEVEL%==0 goto :endserverstartup
+            goto :loop2
+    )
+
+
+
+:endserverstartup
+    cscript //nologo TMPloadingwheel.vbs "Loading done"
+    echo:
+    echo Server started.
+
+    cd %installFolderDirectory%
+    echo Starting launcher ^(Aki.Launcher.exe^)...
+    @start Aki.Launcher.exe
+    cscript //nologo TMPsleep.vbs "5000"
+
+    echo Launcher started.
+
+
+
+:endstartup
+    cd %modFolderDirectory%
+    echo:
+    echo All processes finished.
+
+
+
 :finalsplashscreen
+    if %firstRunComplete%==false (
+        echo firstRunComplete=true>> variables.txt
+    )
+    rem 1 in the timer var is equal to half a second in the splashscreen loop
+    set /a splashscreen_timer=10
+
     rem ascii splash art - happy playing
-            rem i promise it looks better in the console.
-            echo:
-            echo ======================================================================================================
-            echo:
-            echo   _    _            _____   _____ __     __  _____   _             __     __ _____  _   _   _____  _ 
-            echo  ^| ^|  ^| ^|    /\    ^|  __ \ ^|  __ \\ \   / / ^|  __ \ ^| ^|         /\ \ \   / /^|_   _^|^| \ ^| ^| / ____^|^| ^|
-            echo  ^| ^|__^| ^|   /  \   ^| ^|__^) ^|^| ^|__^) ^|\ \_/ /  ^| ^|__^) ^|^| ^|        /  \ \ \_/ /   ^| ^|  ^|  \^| ^|^| ^|  __ ^| ^|
-            echo  ^|  __  ^|  / /\ \  ^|  ___/ ^|  ___/  \   /   ^|  ___/ ^| ^|       / /\ \ \   /    ^| ^|  ^| . ` ^|^| ^| ^|_ ^|^| ^|
-            echo  ^| ^|  ^| ^| / ____ \ ^| ^|     ^| ^|       ^| ^|    ^| ^|     ^| ^|____  / ____ \ ^| ^|    _^| ^|_ ^| ^|\  ^|^| ^|__^| ^|^|_^|
-            echo  ^|_^|  ^|_^|/_/    \_\^|_^|     ^|_^|       ^|_^|    ^|_^|     ^|______^|/_/    \_\^|_^|   ^|_____^|^|_^| \_^| \_____^|^(_^)
-            echo:
-            echo:
-            echo ======================================================================================================
-            echo:
-    echo Server and Launcher should both be up and running, this window will automatically close in a moment.
-    echo All that's left now is for you to press play in the launcher and enjoy the game! :^)
+    rem i promise it looks better in the console.
+    :splashscreen_empty
+        cls
+        echo:
+        echo ===================================================================================================================
+        echo:
+        echo:
+        echo:
+        echo:
+        echo:
+        echo:
+        echo:
+        echo:
+        echo:
+        echo ===================================================================================================================
+        echo:
+        echo Server and Launcher should both be up and running, this window will automatically close in a moment.
+        echo All that's left now is for you to press play in the launcher and enjoy the game! :^)
+        if %devMode%==true echo timer value: %splashscreen_timer%
+
+        set /a splashscreen_timer=splashscreen_timer-1
+        cscript /nologo TMPsleep.vbs "500"
+
+        goto :splashscreen_happy
+
+    :splashscreen_happy
+        cls
+        echo:
+        echo ===================================================================================================================
+        echo:
+        echo   _    _            _____   _____ __     __
+        echo  ^| ^|  ^| ^|    /\    ^|  __ \ ^|  __ \\ \   / /
+        echo  ^| ^|__^| ^|   /  \   ^| ^|__^) ^|^| ^|__^) ^|\ \_/ /
+        echo  ^|  __  ^|  / /\ \  ^|  ___/ ^|  ___/  \   /
+        echo  ^| ^|  ^| ^| / ____ \ ^| ^|     ^| ^|       ^| ^|
+        echo  ^|_^|  ^|_^|/_/    \_\^|_^|     ^|_^|       ^|_^|
+        echo:
+        echo:
+        echo ===================================================================================================================
+        echo:
+        echo Server and Launcher should both be up and running, this window will automatically close in a moment.
+        echo All that's left now is for you to press play in the launcher and enjoy the game! :^)
+        if %devMode%==true echo timer value: %splashscreen_timer%
+
+        set /a splashscreen_timer=splashscreen_timer-1
+        cscript /nologo TMPsleep.vbs "500"
+
+        goto :splashscreen_playing
+
+    :splashscreen_playing
+        cls
+        echo:
+        echo ===================================================================================================================
+        echo:
+        echo   _    _            _____   _____ __     __  _____   _             __     __ _____  _   _   _____  _ 
+        echo  ^| ^|  ^| ^|    /\    ^|  __ \ ^|  __ \\ \   / / ^|  __ \ ^| ^|         /\ \ \   / /^|_   _^|^| \ ^| ^| / ____^|^| ^|
+        echo  ^| ^|__^| ^|   /  \   ^| ^|__^) ^|^| ^|__^) ^|\ \_/ /  ^| ^|__^) ^|^| ^|        /  \ \ \_/ /   ^| ^|  ^|  \^| ^|^| ^|  __ ^| ^|
+        echo  ^|  __  ^|  / /\ \  ^|  ___/ ^|  ___/  \   /   ^|  ___/ ^| ^|       / /\ \ \   /    ^| ^|  ^| . ` ^|^| ^| ^|_ ^|^| ^|
+        echo  ^| ^|  ^| ^| / ____ \ ^| ^|     ^| ^|       ^| ^|    ^| ^|     ^| ^|____  / ____ \ ^| ^|    _^| ^|_ ^| ^|\  ^|^| ^|__^| ^|^|_^|
+        echo  ^|_^|  ^|_^|/_/    \_\^|_^|     ^|_^|       ^|_^|    ^|_^|     ^|______^|/_/    \_\^|_^|   ^|_____^|^|_^| \_^| \_____^|^(_^)
+        echo:
+        echo:
+        echo ===================================================================================================================
+        echo:
+        echo Server and Launcher should both be up and running, this window will automatically close in a moment.
+        echo All that's left now is for you to press play in the launcher and enjoy the game! :^)
+        if %devMode%==true echo timer value: %splashscreen_timer%
+
+        set /a splashscreen_timer=splashscreen_timer-2
+        cscript /nologo TMPsleep.vbs "1000"
+        if %splashscreen_timer% leq 0 goto :endscript-clean
+
+        goto :splashscreen_empty
 
 
 
@@ -611,7 +689,6 @@ if %fastModeQuestionAnswered%==true goto :finalsplashscreen
     if %firstRunComplete%==false (
         echo firstRunComplete=true>> variables.txt
     )
-    cscript /nologo TMPsleep.vbs "6000"
     exit
 
 
