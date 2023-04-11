@@ -1,16 +1,16 @@
-### Introduction and Details
+## Introduction and Details
 **This is an autostart script for SPT-AKI (Single Player Tarkov) with customizable settings for startup and the ability to send a shortcut to the game to your desktop.**
 
 
 *Initially I wrote this script purely out of laziness, because I got tired of navigating to my install folder and starting the server and launcher manually. At some point down the line, I decided I would polish this and release it to the public, in case anyone else finds it useful. With this program you can start SPT with one click, and you can create a shortcut to the game to send to your desktop.*
 
-### QUICK START
+## QUICK START
 
 To begin, simply run 'start.bat' found in the mod folder alongside this file.
 If it's your first time starting the program (it probably is if you're reading this), then you will be put through the setup process.
 You will be asked if you would like to create a shortcut to the script first, then if you want to enable fast mode (unused as of now).
 
-# Variables File
+### Variables File
 **Startup times, directories, and other settings can all be changed manually in the variables file.**
 The `variables.txt` file can be opened with pretty much any text editor, notepad will work just fine.
 After your first run through, the file will look something like this:
