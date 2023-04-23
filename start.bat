@@ -1,5 +1,4 @@
 @echo off
-
 :script_presetup
     cd /D %~dp0
     set modFolderDirectory=%cd%
@@ -13,6 +12,7 @@
     set devMode==false
     set firstRunComplete==false
     set fastMode==false
+    set portQuestionAnswered=false
 
     for /f "tokens=* delims=: " %%G in (variables.txt) do set %%G
 
@@ -56,11 +56,11 @@
         echo set /a counter^=0 ^&^& cscript /nologo TMPsleep.vbs "1000">> tmpkiller.bat
         echo ^:check>> tmpkiller.bat
         echo wmic process where name^="cmd.exe" ^| find "cmd.exe" /c^> TMPcmdinstances.txt>> tmpkiller.bat
-        echo cls ^&^& echo Checks Performed^: %%counter%% ^&^& echo Don't close this window, it will close itself.>> tmpkiller.bat
+        echo cls ^&^& echo Checks Performed^: %%counter%% ^&^& echo Don't close this window, it will close itself. ^&^& echo This child-program's job is to delete all the old scripts and temporary files after the main program runs its course. Closing this window may cause problems.>> tmpkiller.bat
         echo set /p cmdinstances= ^< TMPcmdinstances.txt>> tmpkiller.bat
-        echo cscript /nologo TMPsleep.vbs "1000">> tmpkiller.bat
+        echo cscript /nologo TMPsleep.vbs "250">> tmpkiller.bat
         echo if %%cmdinstances%% leq 1 ^(>> tmpkiller.bat
-        echo    del TMPserverinstances.txt ^&^& del TMPvariablereplace.vbs ^&^& del TMPloadingwheel.vbs ^&^& del TMPshortcutscript.vbs ^&^& del TMPvariablereformat.vbs ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs ^&^& del TMPcmdinstances.txt>> tmpkiller.bat
+        echo    del TMPlauncherinstances.txt ^&^& del TMPcmdinstances.txt ^&^& del TMPserverinstances.txt ^&^& del TMPvariablereplace.vbs ^&^& del TMPloadingwheel.vbs ^&^& del TMPshortcutscript.vbs ^&^& del TMPvariablereformat.vbs ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs>> tmpkiller.bat
         echo    cd /D %%~dp0 ^&^& cd .. ^&^& cd .. ^&^& cd .. ^&^& del TMPservershortcutscript.vbs ^&^& del TMPsleep.vbs ^&^& cd /D %%~dp0>> tmpkiller.bat
         echo    cd EscapeFromTarkov_Data ^&^& del TMPsleep.vbs>> tmpkiller.bat
         echo    ^(goto^) ^2^>nul ^& del "%%~f0" ^& exit>> tmpkiller.bat
@@ -142,7 +142,7 @@
 
     :tempscripts_create_loadingwheel
         rem script behind the loading progress animation... not used enough. looks good. use more. 
-        echo WScript.StdOut.Write^(chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& WScript.Arguments^(0^)^)> TMPloadingwheel.vbs
+        echo WScript.StdOut.Write^(chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& chr^(8^) ^& WScript.Arguments^(0^)^)> TMPloadingwheel.vbs
         
         echo  ^| Created temporary loading wheel ^(#2^) script.
         cscript /nologo TMPsleep.vbs "20"
@@ -201,7 +201,7 @@
 
     
     if %firstRunComplete%==true (
-        cscript /nologo TMPsleep.vbs "1200"
+        cscript /nologo TMPsleep.vbs "1000"
         cls
         goto :disclaimer_bugs_console
     )
@@ -234,12 +234,12 @@
         echo ============================================================
 
     if %firstRunComplete%==true (
-        cscript /nologo TMPsleep.vbs "1200"
+        cscript /nologo TMPsleep.vbs "1000"
         cls
         goto :variablefile_startbuild
     )
 
-    cscript /nologo TMPsleep.vbs "5000"
+    cscript /nologo TMPsleep.vbs "4000"
     pause
     cls
     goto :variablefile_startbuild
@@ -293,7 +293,7 @@
     echo: && echo Pointing to "%cd%" && echo:
     cscript /nologo TMPsleep.vbs "10"
     echo Valid directory found.
-    cscript /nologo TMPsleep.vbs "90"
+    cscript /nologo TMPsleep.vbs "30"
 
 
 
@@ -323,7 +323,7 @@
         goto :script_end_error
     )
     echo Valid server file found.
-    cscript /nologo TMPsleep.vbs "90"
+    cscript /nologo TMPsleep.vbs "30"
 
 
 
@@ -353,7 +353,7 @@
         goto :script_end_error
     )
     echo Valid launcher file found.
-    cscript /nologo TMPsleep.vbs "90"
+    cscript /nologo TMPsleep.vbs "30"
 
 
 
@@ -371,9 +371,9 @@
     set tarkovfile2=sharedassets%randomnumber2%.assets
 
     echo  ^| %tarkovfile1% is your first random file.
-    cscript /nologo TMPsleep.vbs "20"
+    cscript /nologo TMPsleep.vbs "10"
     echo  ^| %tarkovfile2% is your second random file.
-    cscript /nologo TMPsleep.vbs "20"
+    cscript /nologo TMPsleep.vbs "10"
     echo Checking that files exist...
 
     cd EscapeFromTarkov_Data
@@ -381,27 +381,28 @@
     if not exist %tarkovfile1% (
         echo  ^| First check failed. ^(%tarkovfile1%^)
         set /a filecheck1=0
-        cscript /nologo TMPsleep.vbs "20"
+        cscript /nologo TMPsleep.vbs "10"
     )
     if exist %tarkovfile1% (
         echo  ^| First check passed. ^(%tarkovfile1%^)
         set /a filecheck1=1
-        cscript /nologo TMPsleep.vbs "20"
+        cscript /nologo TMPsleep.vbs "10"
     )
     if not exist %tarkovfile2% (
         echo  ^| Second check failed. ^(%tarkovfile2%^)
         set /a filecheck2=0
-        cscript /nologo TMPsleep.vbs "20"
+        cscript /nologo TMPsleep.vbs "10"
         )
     if exist %tarkovfile2% (
         set /a filecheck2=1
         echo  ^| Second check passed. ^(%tarkovfile2%^)
-        cscript /nologo TMPsleep.vbs "20"
+        cscript /nologo TMPsleep.vbs "10"
     )
 
     set /a filecheck_total=filecheck1+filecheck2
     if %filecheck_total%==0 (
         cls
+        color 0C
         title Console - Saru's SPT Auto ^Start Script - *ERROR, SERVER*
         echo Could not find Escape from Tarkov data files.
         echo:
@@ -430,15 +431,60 @@
     cd %modFolderDirectory%
 
     echo Files found. Install is legitimate.
+    cscript /nologo TMPsleep.vbs "40"
+
+
+
+:customport_userprompt
+    if %portQuestionAnswered%==true goto :desktopshortcut_userprompt
     echo:
+    echo ============================================================
     echo:
-    cscript /nologo TMPsleep.vbs "90"
+    echo **HAVE YOU SET A CUSTOM SPT SERVER IP ADDRESS OR PORT?**
+    echo:
+    echo If you've changed your SPT server ip address or port in the `https.json` file,
+    echo enter the custom port you set here. If not, answer with 'N' and continue.
+    :choice1
+        set choice1=
+        set /p choice1=Have you entered a custom server ip address/port? If you're not sure, your answer is probably no. [Y/N] 
+        echo:
+        if /I %choice1%==y (
+            goto :customport_userprompt_textentry
+        )
+        if /I %choice1%==n (
+            echo portQuestionAnswered=true>> variables.txt
+            echo userPort=6969>> variables.txt
+            set userPort=6969
+            goto :desktopshortcut_userprompt
+        )
+        echo Your answer was invalid. You can enter 'Y' or 'N'. This is not case sensitive.
+        pause
+        cls
+        goto :customport_userprompt
+
+
+
+:customport_userprompt_textentry
+    set choice1b=
+    set /p choice1b=Enter your custom *port* here - the ip address is not needed. 
+        if defined choice1b if "%choice1b:~5,1%"=="" (
+            set userPort=%choice1b%
+            echo portQuestionAnswered=true>> variables.txt
+            echo userPort=%choice1b%>> variables.txt
+
+        ) else (
+            echo You entered more than four numbers, the server port is a four digit number. You can find the port in the `http.json` file.
+            goto :customport_userprompt_textentry
+        )
 
 
 
 :desktopshortcut_userprompt
-    if %desktopQuestionAnswered%==true goto :fastmode_userprompt
+    if %portQuestionAnswered%==true goto :fastmode_userprompt
     rem create desktop shortcut.
+    echo:
+    echo ============================================================
+    echo:
     echo **WOULD YOU LIKE TO CREATE A SHORTCUT TO SPT ON YOUR DESKTOP?**
     echo:
     echo This program can send a shortcut to itself to your desktop,
@@ -450,14 +496,14 @@
     echo:
     :choice2
         set choice2=
-        set /p choice2=Would you like to create a desktop shortcut to Single Player Tarkov? Answer with 'LIGHT', 'DARK', and 'SKIP'. 
+        set /p choice2=Would you like to create a desktop shortcut to Single Player Tarkov? Answer with 'LIGHT', 'DARK', or 'SKIP'. 
         if /I %choice2%==light (
             echo desktopQuestionAnswered=true>> variables.txt
             echo:
             echo Creating shortcut...
             cd %modFolderDirectory%
             cscript /nologo TMPshortcutscript.vbs "/res/logoLight.ico"
-            cscript /nologo TMPsleep.vbs "800"
+            cscript /nologo TMPsleep.vbs "200"
             cd %modFolderDirectory%
             goto :fastmode_userprompt
         )
@@ -467,7 +513,7 @@
             echo Creating shortcut...
             cd %modFolderDirectory%
             cscript /nologo TMPshortcutscript.vbs "/res/logoDark.ico"
-            cscript /nologo TMPsleep.vbs "800"
+            cscript /nologo TMPsleep.vbs "200"
             cd %modFolderDirectory%
             goto :fastmode_userprompt
         )
@@ -480,7 +526,7 @@
         echo Your answer was invalid. You can enter 'LIGHT', 'DARK', or 'SKIP'. Please try again.
         pause
         cls
-        goto :desktopshortcut_userprompt
+        goto :customport_userprompt
 
 
 
@@ -512,8 +558,8 @@
         if /I %choice3%==n (
             echo fastModeQuestionAnswered=true>> variables.txt
             echo fastMode=false>> variables.txt
-            echo Variables saved. Fast mode will not be enabled.
             echo:
+            echo Variables saved. Fast mode will not be enabled.
             goto :startup_begin
         )
         echo Your answer was invalid. You can enter 'Y' for yes or 'N' for no.
@@ -530,6 +576,7 @@
     rem added check to skip the startup process if the server is already up.
     echo:
     echo ============================================================
+    echo:
 
     cd %installFolderDirectory%
 
@@ -586,8 +633,35 @@
             wmic process where name="Aki.Launcher.exe" | find "Aki.Launcher.exe" /c> TMPlauncherinstances.txt
             set /p launcherinstances= < TMPlauncherinstances.txt
             if %launcherinstances% gtr 0 goto :alreadyrunning_close_launcher
+    echo ^^^^ 'No Instances Available' MESSAGES ARE GOOD.
+    echo:
+    echo Waiting for server activity to cease. The time this takes may vary wildly, by no fault of this program. ^(May take minutes rather than seconds. Be patient.^)
+
+
+
+:loadingwheel_pause_start
+    cd %modFolderDirectory%
+    rem loading animation.
+    cscript //nologo TMPloadingwheel.vbs "Waiting... \ " 
+        cscript //nologo TMPsleep.vbs "250"
+    cscript //nologo TMPloadingwheel.vbs "Waiting... | "
+        cscript //nologo TMPsleep.vbs "250"
+    cscript //nologo TMPloadingwheel.vbs "Waiting... / "
+        cscript //nologo TMPsleep.vbs "250"
+    cscript //nologo TMPloadingwheel.vbs "Waiting... - "
+        cscript //nologo TMPsleep.vbs "250"
+    netstat -o -n -a | findstr %userPort% >nul 2>&1 && if %ERRORLEVEL%==0 goto :loadingwheel_pause_start
+    goto :loadingwheel_pause_end
+
+
+
+:loadingwheel_pause_end
+    cscript //nologo TMPloadingwheel.vbs "No activity. "
+    echo:
+    echo:
 
     echo All running instances closed. Beginning startup...
+        cd %installFolderDirectory%
 
 
 
@@ -604,23 +678,23 @@
 
 
 
-:loadingwheel_start
+:loadingwheel_loading_start
     rem loading animation.
-    cscript //nologo TMPloadingwheel.vbs "Loading... \" 
+    cscript //nologo TMPloadingwheel.vbs "Loading... \ " 
         cscript //nologo TMPsleep.vbs "250"
-    cscript //nologo TMPloadingwheel.vbs "Loading... |"
+    cscript //nologo TMPloadingwheel.vbs "Loading... | "
         cscript //nologo TMPsleep.vbs "250"
-    cscript //nologo TMPloadingwheel.vbs "Loading... /"
+    cscript //nologo TMPloadingwheel.vbs "Loading... / "
         cscript //nologo TMPsleep.vbs "250"
-    cscript //nologo TMPloadingwheel.vbs "Loading... -"
+    cscript //nologo TMPloadingwheel.vbs "Loading... - "
         cscript //nologo TMPsleep.vbs "250"
-    netstat -o -n -a | findstr 6969 >nul 2>&1 && if %ERRORLEVEL%==0 goto :loadingwheel_end
-    goto :loadingwheel_start
+    netstat -o -n -a | findstr %userPort% >nul 2>&1 && if %ERRORLEVEL%==0 goto :loadingwheel_loading_end
+    goto :loadingwheel_loading_start
 
 
 
-:loadingwheel_end
-    cscript //nologo TMPloadingwheel.vbs "Loading done"
+:loadingwheel_loading_end
+    cscript //nologo TMPloadingwheel.vbs "Loading done."
     echo:
     echo Server started.
 
@@ -640,6 +714,14 @@
     cd %modFolderDirectory%
     echo:
     echo All processes finished.
+    cscript /nologo TMPsleep.vbs "120"
+    color 70
+    cscript /nologo TMPsleep.vbs "120"
+    color 07
+    cscript /nologo TMPsleep.vbs "120"
+    color 70
+    cscript /nologo TMPsleep.vbs "120"
+    color 07
 
 
 
@@ -705,12 +787,12 @@
         echo:
         echo ===================================================================================================================
         echo:
-        echo   _    _            _____   _____ __     __  _____   _             __     __ _____  _   _   _____  _ 
-        echo  ^| ^|  ^| ^|    /\    ^|  __ \ ^|  __ \\ \   / / ^|  __ \ ^| ^|         /\ \ \   / /^|_   _^|^| \ ^| ^| / ____^|^| ^|
-        echo  ^| ^|__^| ^|   /  \   ^| ^|__^) ^|^| ^|__^) ^|\ \_/ /  ^| ^|__^) ^|^| ^|        /  \ \ \_/ /   ^| ^|  ^|  \^| ^|^| ^|  __ ^| ^|
-        echo  ^|  __  ^|  / /\ \  ^|  ___/ ^|  ___/  \   /   ^|  ___/ ^| ^|       / /\ \ \   /    ^| ^|  ^| . ` ^|^| ^| ^|_ ^|^| ^|
-        echo  ^| ^|  ^| ^| / ____ \ ^| ^|     ^| ^|       ^| ^|    ^| ^|     ^| ^|____  / ____ \ ^| ^|    _^| ^|_ ^| ^|\  ^|^| ^|__^| ^|^|_^|
-        echo  ^|_^|  ^|_^|/_/    \_\^|_^|     ^|_^|       ^|_^|    ^|_^|     ^|______^|/_/    \_\^|_^|   ^|_____^|^|_^| \_^| \_____^|^(_^)
+        echo   _    _            _____   _____ __     __     _____   _             __     __ _____  _   _   _____  _ 
+        echo  ^| ^|  ^| ^|    /\    ^|  __ \ ^|  __ \\ \   / /    ^|  __ \ ^| ^|         /\ \ \   / /^|_   _^|^| \ ^| ^| / ____^|^| ^|
+        echo  ^| ^|__^| ^|   /  \   ^| ^|__^) ^|^| ^|__^) ^|\ \_/ /     ^| ^|__^) ^|^| ^|        /  \ \ \_/ /   ^| ^|  ^|  \^| ^|^| ^|  __ ^| ^|
+        echo  ^|  __  ^|  / /\ \  ^|  ___/ ^|  ___/  \   /      ^|  ___/ ^| ^|       / /\ \ \   /    ^| ^|  ^| . ` ^|^| ^| ^|_ ^|^| ^|
+        echo  ^| ^|  ^| ^| / ____ \ ^| ^|     ^| ^|       ^| ^|       ^| ^|     ^| ^|____  / ____ \ ^| ^|    _^| ^|_ ^| ^|\  ^|^| ^|__^| ^|^|_^|
+        echo  ^|_^|  ^|_^|/_/    \_\^|_^|     ^|_^|       ^|_^|       ^|_^|     ^|______^|/_/    \_\^|_^|   ^|_____^|^|_^| \_^| \_____^|^(_^)
         echo:
         echo:
         echo ===================================================================================================================
@@ -734,6 +816,7 @@
 
 
 :script_end_error
+    color 0C
     echo Encountered error, press any key to close the window.
     cscript /nologo TMPsleep.vbs "3000"
     pause
