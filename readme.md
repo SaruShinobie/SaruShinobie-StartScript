@@ -21,8 +21,10 @@ After your first run through, the file will look something like this:
 ;
 ; vv variables below vv
 ;
-modFolderDirectory=C:\SinglePlayerTarkov\user\mods\SaruShinobie-StartScript-2.0.0
+modFolderDirectory=C:\SinglePlayerTarkov\user\mods\SaruShinobie-StartScript-2.0.1
 installFolderDirectory=C:\SinglePlayerTarkov
+userPort=6969
+portQuestionAnswered=true
 desktopQuestionAnswered=true
 fastModeQuestionAnswered=true
 fastMode=false
@@ -39,4 +41,17 @@ There are only a few things of note here for now;
 3. `modFolderDirectory` and `installFolderDirectory` both accept file paths (directories) to the `SaruShinobie-StartScript-X.X.X` folder and your SPT install root folder respectively.
     * In this case, `X.X.X` represents the version of the mod detailed in the folder name.
 
-4. `desktopQuestionAnswered`, `fastModeQuestionAnswered`, `fastMode`, and `firstRunComplete` variables all accept 'true' or 'false' as values.
+4. `desktopQuestionAnswered`, `portQuestionAnswered`, `fastModeQuestionAnswered`, `fastMode`, and `firstRunComplete` variables all accept 'true' or 'false' as values.
+
+5. `userPort` accepts a four digit integer, which can be found in the `http.json` file in `...\Aki_Data\Server\configs`. This value represents the port the server is run on, and chances are you didn't even know you could change it (I didn't), so in 99.9% of cases it will be the default value - `6969`.
+
+### ROUGH CHANGELOG:
+
+* Fixed rare startup issues where the task would detect the server as running after its been closed.
+    - Waits for activity to cease from old server after stopping task.
+* New code to be read by the server to log that the mod has been detected and do away with mod.js errors (a.k.a. a message in the console).
+* Code format changes.
+* Code sped up significantly.
+* Added a window flash once all tasks have been completed (option to turn off add later)
+* Added support for custom server ports/ip addresses.
+    - New user input question where you can enter your custom port or choose the default one on first startup.
