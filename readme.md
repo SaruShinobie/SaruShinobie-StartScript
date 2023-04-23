@@ -29,7 +29,6 @@ desktopQuestionAnswered=true
 fastModeQuestionAnswered=true
 fastMode=false
 firstRunComplete=true
-
 ```
 
 There are only a few things of note here for now;
@@ -48,10 +47,11 @@ There are only a few things of note here for now;
 ### ROUGH CHANGELOG:
 
 * Fixed rare startup issues where the task would detect the server as running after its been closed.
-    - Waits for activity to cease from old server after stopping task.
+    - Waits for activity from the old server to cease after stopping task.
 * New code to be read by the server to log that the mod has been detected and do away with mod.js errors (a.k.a. a message in the console).
-* Code format changes.
-* Code sped up significantly.
-* Added a window flash once all tasks have been completed (add option to turn off soon)
+    - Credit to Jehree in the comment section for the suggestion. <33
+* Code and console format changes.
+* Code and startup sped up significantly.
+* Added a window flash once all tasks have been completed (will add option to turn off soon).
 * Added support for custom server ports/ip addresses.
     - New user input question where you can enter your custom port or choose the default one on first startup.
