@@ -52,6 +52,6 @@ There are only a few things of note here for now;
 * New code to be read by the server to log that the mod has been detected and do away with mod.js errors (a.k.a. a message in the console).
 * Code format changes.
 * Code sped up significantly.
-* Added a window flash once all tasks have been completed (option to turn off add later)
+* Added a window flash once all tasks have been completed (add option to turn off soon)
 * Added support for custom server ports/ip addresses.
     - New user input question where you can enter your custom port or choose the default one on first startup.
