@@ -1,9 +1,9 @@
 {
-    "name": "SaruStartScript",
+    "name": "StartScript",
+    "version": "2.0.1",
+    "main": "src/mod.js",
+    "license": "GNU GPLV3",
     "author": "SaruShinobie",
-    "license": "GNU General Public License Version 3",
-    "main": "",
-    "version": "2.0.0",
-    "akiVersion": "3.5.4",
+    "akiVersion": "~3.5",
     "devdependencies": {}
 }
